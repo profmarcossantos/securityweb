@@ -1,73 +1,35 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import Login from './pages/Login'
+import Menu from './pages/Menu'
 
-import {
-  Button,
-  Grid,
-  Paper,
-  TextField,
-}
-  from '@material-ui/core';
 
-import Firebase from './services/FirebaseConnect'
+export default function App() {
 
-function App() {
+  const PrivateRoute = ({ component: Component}) => {
 
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+    return <Route
+      render={(props => {
+        let isAuthenticated = sessionStorage.getItem("uuid")
+        if (isAuthenticated) {
+          return <Component {...props} />
+        } else {
+          return <Redirect to={{ pathname: "/" }} />
+        }
+      })}
 
-  const login = () => {
-
-    Firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((retorno) => {
-        console.log("Usuário Logado: " + retorno.user.uid)
-      })
-      .catch((erro) => {
-        console.log(erro)
-      })
+    />
   }
 
 
-
-
   return (
-    <div>
-      <Grid container spacing={1}>
-        <Grid item sm={8} xs={12}>
+    <BrowserRouter>
+      <Switch>
+        <Route path="/" exact={true} component={Login} />
+        <PrivateRoute path="/menu" component={Menu} />
 
-        </Grid>
-        <Grid item sm={4} xs={12}>
-          <Paper elevation={0}>
-            <TextField
-              label="E-mail"
-              variant="outlined"
-              size="small"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{ width: "100%", marginBottom: 10 }} />
-            <TextField
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Senha"
-              variant="outlined"
-              type="password"
-              size="small"
-              style={{ width: "100%", marginBottom: 10 }} />
-            <Button
-              onClick={login}
-              variant="outlined"
-              color="primary"
-              style={{ float: "right" }}>
-              Entrar
-            </Button>
-          </Paper>
-        </Grid>
+      </Switch>
 
-      </Grid>
-    </div>
-  );
+    </BrowserRouter>
+  )
 }
-
-export default App;
