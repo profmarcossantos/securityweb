@@ -1,21 +1,38 @@
-import React from 'react'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import React, { useLayoutEffect, useState } from 'react'
+import { BrowserRouter, HashRouter, Switch, Route, Redirect } from 'react-router-dom'
 import Login from './pages/Login'
 import Menu from './pages/Menu'
 
+import Firebase from './services/FirebaseConnect'
 
 export default function App() {
 
-  const PrivateRoute = ({ component: Component}) => {
+  const [user, setUser] = useState(null)
 
+  useLayoutEffect(() => {
+    Firebase
+      .auth()
+      .onAuthStateChanged(user => {
+        if (user !== null) {
+          setUser(user.uid)
+        } else {
+          setUser(null)
+        }
+      })
+
+
+  }, [])
+
+  const PrivateRoute = ({ component: Component }) => {
     return <Route
       render={(props => {
-        let isAuthenticated = sessionStorage.getItem("uuid")
-        if (isAuthenticated) {
+        if (user) {
           return <Component {...props} />
         } else {
           return <Redirect to={{ pathname: "/" }} />
         }
+
+
       })}
 
     />
@@ -23,13 +40,13 @@ export default function App() {
 
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Switch>
         <Route path="/" exact={true} component={Login} />
         <PrivateRoute path="/menu" component={Menu} />
 
       </Switch>
 
-    </BrowserRouter>
+    </HashRouter>
   )
 }

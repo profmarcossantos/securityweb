@@ -8,9 +8,11 @@ import {
     Checkbox
 }
     from '@material-ui/core';
-
+import RoomIcon from '@material-ui/icons/Room';
+import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
 import Firebase from '../services/FirebaseConnect'
 import { useHistory } from "react-router-dom";
+import GoogleMapReact from 'google-map-react';
 
 function Login() {
     let history = useHistory();
@@ -18,9 +20,52 @@ function Login() {
     const [password, setPassword] = useState("")
     const [msg, setMsg] = useState("")
     const [lembreme, setLembreme] = useState(false)
+    const [lista, setLista] = useState([])
+    const [listaPolicia, setListaPolicia] = useState([])
 
+    const [ponto, setPonto] = useState({
+        center: {
+            lat: -28.258205,
+            lng: -52.406838
+        },
+        zoom: 13
+    })
 
     useLayoutEffect(() => {
+
+        Firebase
+            .database()
+            .ref(`/ocorrencias`)
+            .on('value', snapchot => {
+                // converter objetos em listas
+                if (snapchot.val()) {
+                    let dados = snapchot.val()
+                    const keys = Object.keys(dados)
+                    const lista = keys.map((key) => {
+                        return { ...dados[key], id: key }
+                    })
+                    setLista(lista)
+                } else {
+                    setLista([])
+                }
+            })
+
+        Firebase
+            .database()
+            .ref(`/postopolicial`)
+            .on('value', snapchot => {
+                // converter objetos em listas
+                if (snapchot.val()) {
+                    let dados = snapchot.val()
+                    const keys = Object.keys(dados)
+                    const lista = keys.map((key) => {
+                        return { ...dados[key], id: key }
+                    })
+                    setListaPolicia(lista)
+                } else {
+                    setListaPolicia([])
+                }
+            })
 
         let emailStorage = localStorage.getItem("email")
         let passwordStorage = localStorage.getItem("password")
@@ -50,7 +95,10 @@ function Login() {
                     localStorage.setItem("password", password)
                 }
                 setMsg("")
-                history.push("/menu");
+                setTimeout(() => {
+                    history.push("/menu");
+                }, 100);
+
 
             })
             .catch((erro) => {
@@ -58,6 +106,20 @@ function Login() {
                 setMsg("Usuário ou senha inválidos!")
             })
     }
+
+
+    const Marker = ({ text }) =>
+        <div style={{ width: 200}}>
+            <RoomIcon color="error" fontSize="large" />
+            <span style={{ backgroundColor: "red" }}>{text}</span>
+        </div>;
+
+    const MarkerPolicia = ({ text }) =>
+        <div style={{ width: 200}}>
+            <RecordVoiceOverIcon color="primary" fontSize="large" />
+            <span style={{ backgroundColor: "blue", color: "white" }}>{text}</span>
+        </div>;
+
     return (
         <div>
             <Grid container spacing={1}>
@@ -101,8 +163,38 @@ function Login() {
             </Button>
                     </Paper>
                 </Grid>
+                <Grid item sm={12} xs={12}>
+                    <div style={{ height: '100vh', width: '100%' }}>
+                        <GoogleMapReact
+                            bootstrapURLKeys={{ key: "AIzaSyDvdkyqaq8Cu2fVp_9EQNNnhMoDmT-GXt4" }}
+                            defaultCenter={ponto.center}
+                            defaultZoom={ponto.zoom}
+                        >
+                            {lista.map((item, key) =>
+                                <Marker
+                                    key={key}
+                                    lat={item.latitude}
+                                    lng={item.longitude}
+                                    text={item.ocorrencia + " " + item.data}
+                                />
+                            )}
 
+                            {listaPolicia.map((item, key) =>
+                                <MarkerPolicia
+                                    key={key}
+                                    lat={item.latitude}
+                                    lng={item.longitude}
+                                    text={item.local}
+                                />
+                            )}
+
+
+
+                        </GoogleMapReact>
+                    </div>
+                </Grid>
             </Grid>
+
         </div>
     );
 }

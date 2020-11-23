@@ -15,6 +15,10 @@ import { useHistory } from "react-router-dom";
 import Firebase from '../services/FirebaseConnect'
 import CrimeRegistro from './screen/CrimeRegistro'
 import CrimeLista from './screen/CrimeLista'
+import PostoPolicialRegistro from './screen/PostoPolicialRegistro'
+import PostoPolicialLista from './screen/PostoPolicialLista'
+
+
 
 
 export default function Menu() {
@@ -54,7 +58,8 @@ export default function Menu() {
                         <Paper>
                             <MenuList>
                                 <MenuItem onClick={() => setScreen(1)}>CRIMES</MenuItem>
-                                <MenuItem onClick={() => setScreen(2)}>OUTRA COISA</MenuItem>
+                                <MenuItem onClick={() => setScreen(3)}>POSTO POLICIAL</MenuItem>
+                                <MenuItem onClick={() => setScreen(0)}>OUTRA COISA</MenuItem>
                             </MenuList>
                         </Paper>
                     </Grid>
@@ -71,6 +76,12 @@ export default function Menu() {
                         }
                         {screen == 2 &&
                             <CrimeRegistro setScreen={setScreen} />
+                        }
+                        {screen == 3 &&
+                            <PostoPolicialLista setScreen={setScreen} />
+                        }
+                        {screen == 4 &&
+                            <PostoPolicialRegistro setScreen={setScreen} />
                         }
 
                     </Paper>

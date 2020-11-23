@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Firebase from '../../services/FirebaseConnect'
 
-export default function CrimeLista(props) {
+export default function PostoPolicialLista(props) {
 
     const [lista, setLista] = useState([])
 
@@ -24,7 +24,7 @@ export default function CrimeLista(props) {
 
         Firebase
             .database()
-            .ref(`/ocorrencias`)
+            .ref(`/postopolicial`)
             .on('value', snapchot => {
                 // converter objetos em listas
                 if (snapchot.val()) {
@@ -45,7 +45,7 @@ export default function CrimeLista(props) {
     const excluir = (item) => {
         Firebase
             .database()
-            .ref(`/ocorrencias/${item.id}`)
+            .ref(`/postopolicial/${item.id}`)
             .remove()
 
     }
@@ -57,9 +57,7 @@ export default function CrimeLista(props) {
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Ocorrencia</TableCell>
-                                <TableCell align="right">Local</TableCell>
-                                <TableCell align="right">Data</TableCell>
+                                <TableCell>Posto Policial</TableCell>
                                 <TableCell align="right">Opções</TableCell>
                             </TableRow>
                         </TableHead>
@@ -67,10 +65,8 @@ export default function CrimeLista(props) {
                             {lista.map((item, key) => {
                                 return <TableRow key={key}>
                                     <TableCell component="th" scope="row">
-                                        {item.ocorrencia}
+                                        {item.local}
                                     </TableCell>
-                                    <TableCell align="right">{item.local}</TableCell>
-                                    <TableCell align="right">{item.data}</TableCell>
                                     <TableCell align="right">
                                         <Button
                                             variant="contained"
@@ -90,7 +86,7 @@ export default function CrimeLista(props) {
             <Grid item sm={12} xs={12}>
                 <Button
                     variant="contained"
-                    onClick={() => props.setScreen(2)}
+                    onClick={() => props.setScreen(4)}
                     color="primary"
                     startIcon={<AddCircleIcon />}>
                     Novo Registro

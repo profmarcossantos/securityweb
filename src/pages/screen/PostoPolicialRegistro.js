@@ -13,16 +13,12 @@ import Firebase from '../../services/FirebaseConnect'
 import { v4 as uuidv4 } from 'uuid';
 import Geocode from "react-geocode";
 
-export default function CrimeRegistro(props) {
+export default function PostoPolicialRegistro(props) {
 
-    const [ocorrencia, setOcorrencia] = useState("")
     const [local, setLocal] = useState("")
-    const [data, setData] = useState("")
 
     const limpar = () => {
-        setOcorrencia("")
         setLocal("")
-        setData("")
     }
 
     const salvarRegistro = () => {
@@ -34,9 +30,7 @@ export default function CrimeRegistro(props) {
                 const { lat, lng } = response.results[0].geometry.location;
                 console.log(lat, lng);
                 let objeto = {
-                    ocorrencia: ocorrencia,
                     local: local,
-                    data: data,
                     latitude: lat,
                     longitude: lng
                 }
@@ -44,7 +38,7 @@ export default function CrimeRegistro(props) {
 
                 Firebase
                     .database()
-                    .ref(`ocorrencias/${code}`)
+                    .ref(`postopolicial/${code}`)
                     .set(objeto)
                     .then(() => {
                         limpar()
@@ -65,25 +59,9 @@ export default function CrimeRegistro(props) {
         <Grid container spacing={1} >
             <Grid item sm={10} xs={12}>
                 <TextField
-                    label="Ocorrencia"
-                    variant="outlined"
-                    value={ocorrencia}
-                    onChange={(e) => setOcorrencia(e.target.value)}
-                    size="small"
-                    type="email"
-                    style={{ width: "100%", marginBottom: 10 }} />
-                <TextField
                     value={local}
                     onChange={(e) => setLocal(e.target.value)}
                     label="Local"
-                    variant="outlined"
-                    size="small"
-                    type="email"
-                    style={{ width: "100%", marginBottom: 10 }} />
-                <TextField
-                    value={data}
-                    onChange={(e) => setData(e.target.value)}
-                    label="Data e Hora"
                     variant="outlined"
                     size="small"
                     type="email"
@@ -98,7 +76,7 @@ export default function CrimeRegistro(props) {
                 <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => props.setScreen(1)}
+                    onClick={() => props.setScreen(3)}
                     style={{ float: "right" }}>
                     Cancelar
                 </Button>
